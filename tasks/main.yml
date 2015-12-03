@@ -15,7 +15,7 @@
   sudo: yes
 
 - name: copy sshd_config file to remote host
-  file:
+  copy:
     src: sshd_config
     dest: /etc/ssh/
     owner: root
