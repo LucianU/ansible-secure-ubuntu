@@ -1,6 +1,5 @@
 secure
 ======
-
 A role that secures a Ubuntu install. It:
  - creates a user for deployments and sets up the SSH key
  - hardens the SSH server
@@ -10,15 +9,10 @@ A role that secures a Ubuntu install. It:
 
 Role Variables
 --------------
-
-`secure_deployment_user` - the user that will be used for future deployments
+| Variable | Description | Default value |
+|----------|-------------|---------------|
+|`secure_deployment_user`| User that will be used for future deployments | `none` |
 
 License
 -------
-
 BSD
-
-Author Information
-------------------
-
-Lucian Ursu
