@@ -47,6 +47,7 @@
   apt:
     name: iptables
     state: present
+  when: install_iptables
   sudo: yes
 
 - name: copy iptables rules file
@@ -55,6 +56,7 @@
     dest: /etc/iptables.rules
   notify:
     - load iptables rules
+  when: install_iptables
   sudo: yes
 
 - name: enable iptables rules at startup
@@ -62,4 +64,5 @@
     src: firewall
     dest: /etc/network/if-pre-up.d/firewall
     mode: 0754
+  when: install_iptables
   sudo: yes
