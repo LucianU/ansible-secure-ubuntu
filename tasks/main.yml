@@ -6,13 +6,13 @@
     shell: /bin/bash
     groups: sudo
     state: present
-  sudo: yes
+  become: yes
 
 - name: copy ssh public key to remote host
   authorized_key:
     user: "{{ secure_deployment_user }}"
     key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
-  sudo: yes
+  become: yes
 
 - name: copy sshd_config file to remote host
   copy:
@@ -23,32 +23,32 @@
     mode: 0644
   notify:
     - restart ssh
-  sudo: yes
+  become: yes
 
 - name: install fail2ban
   apt:
     name: fail2ban
     state: present
-  sudo: yes
+  become: yes
 
 - name: install unattended-upgrades
   apt:
     name: unattended-upgrades
     state: present
-  sudo: yes
+  become: yes
 
 - name: adjust APT update intervals
   copy:
     src: apt_periodic
     dest: /etc/apt/apt.conf.d/10periodic
-  sudo: yes
+  become: yes
 
 - name: install iptables
   apt:
     name: iptables
     state: present
   when: install_iptables
-  sudo: yes
+  become: yes
 
 - name: copy iptables rules file
   copy:
@@ -57,7 +57,7 @@
   notify:
     - load iptables rules
   when: install_iptables
-  sudo: yes
+  become: yes
 
 - name: enable iptables rules at startup
   copy:
@@ -65,4 +65,4 @@
     dest: /etc/network/if-pre-up.d/firewall
     mode: 0754
   when: install_iptables
-  sudo: yes
+  become: yes
