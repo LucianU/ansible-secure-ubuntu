@@ -2,16 +2,25 @@
 - name: create remote user
   user:
     name: "{{ secure_deployment_user }}"
-    password: "{{ secure_deployment_user_pass }}"
     shell: /bin/bash
     groups: sudo
     state: present
   become: yes
 
-- name: copy ssh public key to remote host
-  authorized_key:
-    user: "{{ secure_deployment_user }}"
-    key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+- name: give user passwordless sudo
+  copy:
+    content: '{{ secure_deployment_user }} ALL=(ALL:ALL) NOPASSWD:ALL'
+    dest: /etc/sudoers.d/{{ secure_deployment_user }}
+    mode: 0440
+  become: yes
+
+- name: copy root's SSH dir to the user's
+  copy:
+    remote_src: yes
+    src: /root/.ssh
+    dest: "/home/{{ secure_deployment_user }}/.ssh"
+    owner: "{{ secure_deployment_user }}"
+    group: "{{ secure_deployment_user }}"
   become: yes
 
 - name: copy sshd_config file to remote host
@@ -47,7 +56,7 @@
   apt:
     name: iptables
     state: present
-  when: install_iptables
+  when: secure_install_iptables
   become: yes
 
 - name: copy iptables rules file
@@ -56,7 +65,7 @@
     dest: /etc/iptables.rules
   notify:
     - load iptables rules
-  when: install_iptables
+  when: secure_install_iptables
   become: yes
 
 - name: enable iptables rules at startup
@@ -64,5 +73,5 @@
     src: firewall
     dest: /etc/network/if-pre-up.d/firewall
     mode: 0754
-  when: install_iptables
+  when: secure_install_iptables
   become: yes
